@@ -1,7 +1,7 @@
 import { json } from 'express'
 import fs from 'fs'
 
-const path = "./db-json/productsDb.json"
+const path = "./dbjson/productsDb.json"
 
 class ProductsManagerFs {
     constructor(){
@@ -32,7 +32,7 @@ class ProductsManagerFs {
         try{
             const products = await this.readProducts()
             
-            const product = products.find(product => product.id === id)
+            const product = products.find(product => product.id === parseInt(id))
             return product
         }catch(error){
             console.error(error)
@@ -64,11 +64,11 @@ class ProductsManagerFs {
         }
     }
 
-    updateProduct = async (updatesProduct) => {
+    updateProduct = async (updatesProduct,pid) => {
         try{
             const products = await this.readProducts()
 
-            const index = products.findIndex(product => product.id === updatesProduct.id)
+            const index = products.findIndex(product => product.id === parseInt(pid))
 
             if(index === -1)
                 return "Producto no encontrado"
@@ -90,7 +90,7 @@ class ProductsManagerFs {
         try{
             const products = await this.readProducts()
 
-            const newProducts = products.filter(product => product.id !== id)
+            const newProducts = products.filter(product => product.id !== parseInt(id))
 
             await fs.promises.writeFile(path,JSON.stringify(newProducts,null, "\t"))
 

@@ -2,18 +2,41 @@
 import express from "express";
 import userRouter from "./routes/users.router.js";
 import productRouter from "./routes/products.router.js";
-import pruebasRouter from "./routes/pruebas.router.js";
+import cartsRouter from "./routes/carts.router.js"
+import viewsRouter from "./routes/views.router.js";
 import { fileURLToPath } from 'url';
 import { dirname } from 'node:path'
 import morgan from "morgan";
 import uploader from "./utils/multer.js";
 import handlebars from "express-handlebars";
+import {Server} from "socket.io"
+
 
 
 const app = express();
 const PORT = 8080;
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
+
+
+const httpServer = app.listen(PORT,() => {
+    console.log("Escuchando");
+})
+
+const socketServer = new Server(httpServer)
+socketServer.on("connection", socket => {
+    console.log("Nuevo cliente conectado")
+
+    socket.on("message", data => {
+        console.log(data)
+    })
+
+    socket.emit("evento_para_un_socket_individual", "este mensaje solo lo debe recibir el socket actual")
+
+    socket.broadcast.emit("evento_para_todos_menos_para_el_socket_actual", "este evento lo veran todos los sockets conectados menos el socket actual que envio el mensaje")
+
+    socketServer.emit("mensaje_para-todos", "este mensaje es para todos")
+})
 
 
 
@@ -30,7 +53,7 @@ app.set("views", __dirname + "/views") //primer argumneto digo que en views esta
 app.set("view engine", "handlebars")
 
 
-app.use("/pruebas", pruebasRouter)
+//app.use("/", viewsRouter)
 
 //Los middlewars son procesos que ocurren antes de llegar a los endpoints
 app.use(function(req,res,next){
@@ -39,11 +62,11 @@ app.use(function(req,res,next){
 })
 
 //endpoints
-app.post("/", uploader.single("myFile"), (req,res) => {
-    res.send("archivo subido")
-})
 app.use("/api/users",userRouter) //usa la ruta del primer parametro para la configuracion de userRouter, esta se concatena con las que hay en el otro archivo
+
+//endpoints entrega 1
 app.use("/api/products", productRouter);
+app.use("/api/carts", cartsRouter);
 
 //manejo de errores
 app.use((error,req, res, next)=> {
@@ -51,6 +74,3 @@ app.use((error,req, res, next)=> {
     res.status(500).send("error de server")
 }) //Siempre en manejo de errores error tiene que ser el primer parametro de la callback
 
-app.listen(PORT,() => {
-    console.log("Escuchando");
-})

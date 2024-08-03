@@ -1,0 +1,64 @@
+[
+	{
+		"id": 1,
+		"products": {
+			"title": "jordan 4",
+			"description": "zapatillas de basket",
+			"code": "233",
+			"price": 256,
+			"status": true,
+			"stock": 10,
+			"category": "nike",
+			"id": 1
+		}
+	},
+	{
+		"id": 2,
+		"products": {
+			"title": "jordan 4",
+			"description": "zapatillas de basket",
+			"code": "233",
+			"price": 256,
+			"status": true,
+			"stock": 10,
+			"category": "nike",
+			"id": 1
+		}
+	},
+	{
+		"id": 3,
+		"products": [
+			{
+				"title": "jordan 4",
+				"description": "zapatillas de basket",
+				"code": "233",
+				"price": 256,
+				"status": true,
+				"stock": 10,
+				"category": "nike",
+				"id": 1
+			},
+			{
+				"title": "jordan 1",
+				"description": "zapatillas de basket",
+				"code": "233",
+				"price": 256,
+				"status": true,
+				"stock": 10,
+				"category": "nike",
+				"id": 2
+			},
+			{
+				"quantity": 1
+			},
+			{
+				"product": null,
+				"quantity": 1
+			},
+			{
+				"product": "2",
+				"quantity": 1
+			}
+		]
+	}
+]

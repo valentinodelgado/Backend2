@@ -1,0 +1,12 @@
+[
+	{
+		"title": "jordan 4",
+		"description": "zapatillas de basket",
+		"code": "233",
+		"price": 256,
+		"status": true,
+		"stock": 10,
+		"category": "nike",
+		"id": 1
+	}
+]

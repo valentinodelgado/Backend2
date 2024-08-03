@@ -2,6 +2,10 @@ import { Router } from "express";
 
 const router = Router()
 
+router.use("/", (req,res) => {
+    res.render("index", {})
+})
+
 const users = [
     {id: "1", full_name: "user 1",email: "user1@gmail.com"  },
     {id: "2", full_name: "user 2",email: "user2@gmail.com"  },
@@ -16,7 +20,7 @@ router.get("/", (req,res) => {
         role: "admin"
     }
 
-    res.render("layouts/index.handlebars", {
+    res.render("users.handlebars", {
         user: userLogin,
         isAdmin: userLogin.role == "admin",
         users,
