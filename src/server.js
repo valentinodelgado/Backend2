@@ -4,6 +4,7 @@ import userRouter from "./routes/users.router.js";
 import productRouter from "./routes/products.router.js";
 import cartsRouter from "./routes/carts.router.js"
 import viewsRouter from "./routes/views.router.js";
+import ProductsManagerFs from "./managers/FileSystem/products.managers.js";
 import { fileURLToPath } from 'url';
 import { dirname } from 'node:path'
 import morgan from "morgan";
@@ -14,28 +15,33 @@ import {Server} from "socket.io"
 
 
 const app = express();
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
+const productService = new ProductsManagerFs()
 
 
 const httpServer = app.listen(PORT,() => {
     console.log("Escuchando");
 })
 
-const socketServer = new Server(httpServer)
-socketServer.on("connection", socket => {
+const io = new Server(httpServer)
+let messages = []
+io.on("connection", socket => {
     console.log("Nuevo cliente conectado")
 
     socket.on("message", data => {
-        console.log(data)
+        //console.log(data)
+        messages.push(data)
+        io.emit("messageLogs", messages)
     })
 
-    socket.emit("evento_para_un_socket_individual", "este mensaje solo lo debe recibir el socket actual")
+    //manejo de productos
+    socket.on("getProducts", async () => {
+        const products = await productService.getProducts()
+        io.emit("productsData", products)
+    })
 
-    socket.broadcast.emit("evento_para_todos_menos_para_el_socket_actual", "este evento lo veran todos los sockets conectados menos el socket actual que envio el mensaje")
-
-    socketServer.emit("mensaje_para-todos", "este mensaje es para todos")
 })
 
 
@@ -53,7 +59,7 @@ app.set("views", __dirname + "/views") //primer argumneto digo que en views esta
 app.set("view engine", "handlebars")
 
 
-//app.use("/", viewsRouter)
+app.use("/home", viewsRouter(io))
 
 //Los middlewars son procesos que ocurren antes de llegar a los endpoints
 app.use(function(req,res,next){
@@ -73,4 +79,6 @@ app.use((error,req, res, next)=> {
     console.log(error.stack)
     res.status(500).send("error de server")
 }) //Siempre en manejo de errores error tiene que ser el primer parametro de la callback
+
+
 

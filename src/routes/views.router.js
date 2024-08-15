@@ -1,32 +1,29 @@
 import { Router } from "express";
+import ProductsManagerFs from "../managers/FileSystem/products.managers.js";
 
-const router = Router()
+export default (io) => {
+    const router = Router();
+    const productService = new ProductsManagerFs();
 
-router.use("/", (req,res) => {
-    res.render("index", {})
-})
+    router.use("/", (req, res) => {
+        res.render("home", {});
+    });
 
-const users = [
-    {id: "1", full_name: "user 1",email: "user1@gmail.com"  },
-    {id: "2", full_name: "user 2",email: "user2@gmail.com"  },
-    {id: "3", full_name: "user 3",email: "user3@gmail.com"  }
-]
+    router.post("/realtimeproducts", async (req, res) => {
+        try {
+            const { body } = req;
 
-//render es el metodo para renderiza una plantilla
+            await productService.createProduct(body);
+            const newProducts = await productService.getProducts();
 
-router.get("/", (req,res) => {
-    const userLogin = {
-        full_name: "Chelo",
-        role: "admin"
-    }
+            io.emit("realTime", newProducts);
 
-    res.render("users.handlebars", {
-        user: userLogin,
-        isAdmin: userLogin.role == "admin",
-        users,
-        title: "Home",
-        styles: "styles.css"
-    })
-})
+            res.render("realTimeProducts", {});
+        } catch (error) {
+            console.error(error);
+        }
+    });
 
-export default router
+    return router;
+};
+

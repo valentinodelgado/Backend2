@@ -1,6 +1,7 @@
+
 const socket = io()
 
-socket.on("productsData", products => {
+socket.on("realTime", (products) =>{
     const tabla = document.getElementById("tabla")
     tabla.innerHTML = ""
     products.forEach(product => {
@@ -13,5 +14,3 @@ socket.on("productsData", products => {
         tabla.appendChild(row)
     });
 })
-
-socket.emit("getProducts")
