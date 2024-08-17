@@ -4,7 +4,6 @@ import userRouter from "./routes/users.router.js";
 import productRouter from "./routes/products.router.js";
 import cartsRouter from "./routes/carts.router.js"
 import viewsRouter from "./routes/views.router.js";
-import ProductsManagerFs from "./managers/FileSystem/products.managers.js";
 import { fileURLToPath } from 'url';
 import { dirname } from 'node:path'
 import morgan from "morgan";
@@ -13,6 +12,7 @@ import handlebars from "express-handlebars";
 import {Server} from "socket.io"
 import { connectDB } from "./config/index.js";
 import chatSocket from "./utils/chatSocket.js";
+import productSocket from "./utils/productSocket.js";
 
 
 
@@ -29,34 +29,13 @@ const httpServer = app.listen(PORT,() => {
 
 const io = new Server(httpServer)
 
-//chatSocket(io)
+chatSocket(io)
 
 const ioMiddleware = (io) => (req,res,next) =>{
     req.io = io
     next()
 }
 
-
-const productSocket = (io) => {
-    io.on("connection", async socket => {
-        try{
-            console.log("hola llegue")
-            const productService = new ProductsManagerFs()
-            const products = await productService.getProducts()
-            socket.emit("products", products)
-
-            socket.on("addProduct", async (data) => {
-                await productService.createProduct(data)
-            })
-
-            socket.on("deleteProduct", async data => {
-                await productService.deleteProduct(data.id)
-            })
-        }catch(error){
-            console.error(error)
-        }
-        })
-    }   
 
 productSocket(io)
 

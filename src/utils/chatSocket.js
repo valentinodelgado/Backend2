@@ -9,11 +9,6 @@ const chatSocket = (io) => {
         io.emit("messageLogs", messages)
     })
 
-    //manejo de productos
-    socket.on("getProducts", async () => {
-        const products = await productService.getProducts()
-        io.emit("productsData", products)
-    })
 })
 } 
 
