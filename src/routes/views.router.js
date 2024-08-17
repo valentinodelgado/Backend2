@@ -1,29 +1,25 @@
 import { Router } from "express";
 import ProductsManagerFs from "../managers/FileSystem/products.managers.js";
 
-export default (io) => {
-    const router = Router();
-    const productService = new ProductsManagerFs();
+const router = Router();
+const productService = new ProductsManagerFs();
 
-    router.use("/", (req, res) => {
-        res.render("home", {});
-    });
+router.get("/", async (req, res) => {
+    try{
+        const products = await productService.getProducts()
+        res.render("home", {products});
+    }catch(error){
+        console.error(error)
+    }
+});
 
-    router.post("/realtimeproducts", async (req, res) => {
-        try {
-            const { body } = req;
+router.get("/realtimeproducts", async (req, res) => {
+    try{
+        res.render("realTimeProducts", {})
+    }catch(error){
+        console.error(error)
+    }
 
-            await productService.createProduct(body);
-            const newProducts = await productService.getProducts();
+});
 
-            io.emit("realTime", newProducts);
-
-            res.render("realTimeProducts", {});
-        } catch (error) {
-            console.error(error);
-        }
-    });
-
-    return router;
-};
-
+export default router;

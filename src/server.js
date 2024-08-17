@@ -11,6 +11,8 @@ import morgan from "morgan";
 import uploader from "./utils/multer.js";
 import handlebars from "express-handlebars";
 import {Server} from "socket.io"
+import { connectDB } from "./config/index.js";
+import chatSocket from "./utils/chatSocket.js";
 
 
 
@@ -18,7 +20,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-const productService = new ProductsManagerFs()
+
 
 
 const httpServer = app.listen(PORT,() => {
@@ -26,30 +28,47 @@ const httpServer = app.listen(PORT,() => {
 })
 
 const io = new Server(httpServer)
-let messages = []
-io.on("connection", socket => {
-    console.log("Nuevo cliente conectado")
 
-    socket.on("message", data => {
-        //console.log(data)
-        messages.push(data)
-        io.emit("messageLogs", messages)
-    })
+//chatSocket(io)
 
-    //manejo de productos
-    socket.on("getProducts", async () => {
-        const products = await productService.getProducts()
-        io.emit("productsData", products)
-    })
-
-})
+const ioMiddleware = (io) => (req,res,next) =>{
+    req.io = io
+    next()
+}
 
 
+const productSocket = (io) => {
+    io.on("connection", async socket => {
+        try{
+            console.log("hola llegue")
+            const productService = new ProductsManagerFs()
+            const products = await productService.getProducts()
+            socket.emit("products", products)
+
+            socket.on("addProduct", async (data) => {
+                await productService.createProduct(data)
+            })
+
+            socket.on("deleteProduct", async data => {
+                await productService.deleteProduct(data.id)
+            })
+        }catch(error){
+            console.error(error)
+        }
+        })
+    }   
+
+productSocket(io)
+
+
+//Moongose
+connectDB()
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use("/static",express.static(__dirname + "/public")) //le estoy diciendo a express que utilice esta carpeta public como la carpeta de archivos estaticos, el primer parametro crea una carpeta virtual para que no sea tan facil acceder 
 app.use(morgan("dev"))
+app.use(ioMiddleware(io))
 
 //configuracion del motor de plantillas, usamos engine que es un metodo
 app.engine("handlebars", handlebars.engine())
@@ -59,7 +78,7 @@ app.set("views", __dirname + "/views") //primer argumneto digo que en views esta
 app.set("view engine", "handlebars")
 
 
-app.use("/home", viewsRouter(io))
+app.use("/api/home", viewsRouter)
 
 //Los middlewars son procesos que ocurren antes de llegar a los endpoints
 app.use(function(req,res,next){

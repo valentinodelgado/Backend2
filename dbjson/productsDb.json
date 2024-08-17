@@ -18,25 +18,5 @@
 		"stock": 10,
 		"category": "adidas",
 		"id": 2
-	},
-	{
-		"title": "campus",
-		"description": "zapatillas de futboldddd",
-		"code": "1223",
-		"price": 256222,
-		"status": true,
-		"stock": 10,
-		"category": "adidas",
-		"id": 3
-	},
-	{
-		"title": "knu",
-		"description": "zapatillas de futboldddd",
-		"code": "1225553",
-		"price": 256222,
-		"status": true,
-		"stock": 10,
-		"category": "vans",
-		"id": 4
 	}
 ]

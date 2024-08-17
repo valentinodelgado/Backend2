@@ -1,5 +1,7 @@
 import express from "express";
 import { Router } from "express";
+import { userModel } from "../models/users.model.js";
+
 
 //metodo estatico: son las que no necesito instanciar, las que no necesito crear un objeto
 
@@ -19,25 +21,47 @@ function auth(req, res, next){
 
 const user = [];
 
-router.get("/",auth, (req,res) => {
-    res.send({data: user});
+router.get("/",auth, async (req,res) => {
+    const users = await userModel.find()
+    res.send({status: "success", payload: users});
 })
 
-router.post("/", (req,res) => {
-    const {body} = req //la informacion de un formulario viaja en el body
-    user.push({id: user.length + 1, ...body})
-    res.send({data: user});
+router.post("/", async (req,res) => {
+    try{
+        const {body} = req //la informacion de un formulario viaja en el body
+        if (!body.first_name || !body.email)
+        {
+            return res.status(400).send({status: "error", error: "falta data"})
+        }
+        //user.push({id: user.length + 1, ...body})
+        const result = await userModel.create(body) //crea un usuario
+        
+        res.status(200).send({data: result});
+    }catch(error){
+        console.error(error)
+    }
 })
 
-router.put("/", (req,res) => {
-    res.send("Hola mundo put");
+router.put("/:uid", async (req,res) => {
+    const {uid} = req.params
+
+    let userToReplace = req.body
+
+    if (!userToReplace.first_name || !userToReplace.email)
+        {
+            return res.status(400).send({status: "error", error: "falta data"})
+        }
+
+    const result = await userModel.updateOne({_id: uid}, userToReplace)
+
+    res.send({status: "success", message: "usuario actualizado"});
 })
 
 //eliminando un usuerio por id
-router.delete("/:uid", (req,res) => {
+router.delete("/:uid", async (req,res) => {
     const {uid} = req.params
-    const nuevaLista = user.filter(user => user.id != parseInt(uid))
-    res.send(nuevaLista);
+    const result = await userModel.deleteOne({_id: uid})
+    res.send({status: "success", message: "usuario eliminado"});
 })
 
 export default router;

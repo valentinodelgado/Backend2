@@ -1,7 +1,70 @@
-<table>
-    <tbody id="tabla">
-        
-    </tbody>
-</table>
+<h1>Real time prodcuts</h1>
+
+
+<section class="container mt-5 w-100 d-flex align-items-center justify-content-center mb-5"> 
+    <form id="product-form" class="form-control w-50">
+        <input type="text" name="title" class="form-control" placeholder="Ingrese el nombre del producto">
+        <input type="text" name="code" class="form-control" placeholder="Ingrese el codigo del producto">
+        <input type="text" name="description" class="form-control" placeholder="Ingrese la descripcion del producto">
+        <input type="text" name="price" class="form-control" placeholder="Ingrese el precio del producto">
+        <button class="btn btn-outline-dark" type="submit">enviar</button>
+    </form>
+</section>
+
+<div id="product-list" class="d-flex justify-content-center align-items-center">
+
+</div>
 <script src="/socket.io/socket.io.js"></script>
-<script src="/static/assets/js/realTime.js"></script>
+<script>
+    const socket = io()
+    socket.on("products", data => {
+        let productListDiv = document.getElementById("product-list")
+        let html = ""
+        data.forEach(product => {
+        html += `
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">${product.title}</h5>
+                    <h6 class="card-subtitle mb-2 text-body-secondary">${product.price}$</h6>
+                    <p class="card-text">${product.description}</p>
+                    <button id="${product.id}" class="btn btn-outline-dark botones">eliminar</button>
+                </div>
+            </div>
+        `
+        })
+        productListDiv.innerHTML = html
+
+            let botones = document.querySelectorAll(".botones");
+
+    botones.forEach(boton => {
+        boton.addEventListener("click", evt =>{
+            const id = evt.target.id
+            console.log(id)
+            socket.emit("deleteProduct", {id})
+        })
+    })
+    })
+
+    let form = document.getElementById("product-form")
+
+    form.addEventListener("submit", evt => {
+        evt.preventDefault()
+        const title = form.elements.title.value
+        const description = form.elements.description.value
+        const price = form.elements.price.value
+        const code = form.elements.code.value
+
+        //console.log("Sending product:", {title, description, price})
+        
+        socket.emit("addProduct", {
+            title,
+            description,
+            price: Number(price),
+            code: Number(code)
+        })
+        form.reset()
+    })
+
+
+
+</script>
