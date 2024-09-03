@@ -1,5 +1,7 @@
-import { json } from 'express'
-import fs from 'fs'
+import { json } from 'express';
+import fs from 'fs';
+import { productModel } from '../../models/products.model.js';
+
 
 const path = "./dbjson/productsDb.json"
 
@@ -8,20 +10,20 @@ class ProductsManagerFs {
         this.path = path
     }
 
-    readProducts = async () => {
-        try{
-                const productsJson = await fs.promises.readFile(path, "utf-8")
-                const productsJs = JSON.parse(productsJson)
-                return productsJs
-        } catch (error) {
-            return []
-        }
-    }
-
+//    readProducts = async () => {
+//        try{
+//                const productsJson = await fs.promises.readFile(path, "utf-8")
+//                const productsJs = JSON.parse(productsJson)
+//                return productsJs
+//        } catch (error) {
+//            return []
+//        }
+//    }
+//
     //crud productos
-    getProducts = async () => {
+    getProducts = async (filter) => {
         try{
-            const products = await this.readProducts()
+            const products = await productModel.find(filter)
             return products
         } catch (error){
             console.error(error);
@@ -64,28 +66,28 @@ class ProductsManagerFs {
         }
     }
 
-    updateProduct = async (updatesProduct,pid) => {
-        try{
-            const products = await this.readProducts()
+//    updateProduct = async (updatesProduct,pid) => {
+//        try{
+//            const products = await this.readProducts()
+//
+//            const index = products.findIndex(product => product.id === parseInt(pid))
+//
+//            if(index === -1)
+//                return "Producto no encontrado"
 
-            const index = products.findIndex(product => product.id === parseInt(pid))
+//            delete updatesProduct.id
 
-            if(index === -1)
-                return "Producto no encontrado"
+//            products[index] = {...products[index], ...updatesProduct}
 
-            delete updatesProduct.id
+//            await fs.promises.writeFile(path,JSON.stringify(products,null,"\t"))
 
-            products[index] = {...products[index], ...updatesProduct}
-
-            await fs.promises.writeFile(path,JSON.stringify(products,null,"\t"))
-
-            return "Producto actualizado"
+//            return "Producto actualizado"
             
-        }catch(error){
-            console.error(error)
-        }
+//        }catch(error){
+//            console.error(error)
+//        }
 
-    }
+//    }
     deleteProduct = async (id) => {
         try{
             const products = await this.readProducts()

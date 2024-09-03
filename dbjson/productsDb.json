@@ -6,8 +6,7 @@
 		"price": 256,
 		"status": true,
 		"stock": 10,
-		"category": "nike",
-		"id": 1
+		"category": "nike"
 	},
 	{
 		"title": "samba",
@@ -16,7 +15,15 @@
 		"price": 256222,
 		"status": true,
 		"stock": 10,
-		"category": "adidas",
-		"id": 2
+		"category": "adidas"
+	},
+	{
+		"title": "suede",
+		"description": "zapatillas de futbol",
+		"code": "467",
+		"price": 256222,
+		"status": true,
+		"stock": 10,
+		"category": "puma"
 	}
 ]

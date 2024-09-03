@@ -50,7 +50,13 @@ app.use(morgan("dev"))
 app.use(ioMiddleware(io))
 
 //configuracion del motor de plantillas, usamos engine que es un metodo
-app.engine("handlebars", handlebars.engine())
+app.engine('handlebars', handlebars.engine({
+    // Puedes configurar opciones adicionales aquí si es necesario
+    runtimeOptions: {
+        allowProtoPropertiesByDefault: true,
+        allowProtoMethodsByDefault: true
+    }
+}));
 //configurar la carpta donde debe tomar las plantillas
 app.set("views", __dirname + "/views") //primer argumneto digo que en views estan mis plantillas y el segundo es la direccion
 //extencion de las plantillas

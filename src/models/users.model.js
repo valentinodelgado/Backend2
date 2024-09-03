@@ -1,5 +1,5 @@
 import {Schema, model} from "mongoose";
-
+import mongoosePaginate from "mongoose-paginate-v2"
 const userCollection = "users"
 
 //estructura que se va a cumplir a raja tabla de como vamos a trabajr los datos
@@ -13,5 +13,7 @@ const userSchema = new Schema({
         unique: true //hace que no se puedan repetir 2 usuarios con el mismo mail
     }
 }) 
+
+userSchema.plugin(mongoosePaginate)
 
 export const userModel = model(userCollection, userSchema)

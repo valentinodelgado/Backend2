@@ -1,6 +1,7 @@
 import express from "express";
 import { Router } from "express";
 import { userModel } from "../models/users.model.js";
+import mongoosePaginate from "mongoose-paginate-v2"
 
 
 //metodo estatico: son las que no necesito instanciar, las que no necesito crear un objeto
@@ -19,10 +20,10 @@ function auth(req, res, next){
     next();
 }
 
-const user = [];
 
 router.get("/",auth, async (req,res) => {
-    const users = await userModel.find()
+    const users = await userModel.paginate({gender: "Female"}, {limit: 20, page: 1}) //divide de a 20 por pagina
+    console.log(users)
     res.send({status: "success", payload: users});
 })
 
