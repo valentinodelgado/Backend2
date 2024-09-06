@@ -5,17 +5,27 @@
                 <h5 class="card-title">{{this.title}}</h5>
                 <h6 class="card-subtitle mb-2 text-body-secondary">{{this.price}}$</h6>
                 <p class="card-text">{{this.description}}</p>
-                <button class="btn btn-outline-dark" type="submit">Agregar al carrito</button>
+                <button class="btn btn-outline-dark botones" data-product-id="{{this._id}}">Agregar al carrito</button>
             </div>
         </div>
     {{/each}}
 </div>
+
 <div class="d-flex justify-content-center align-items-center">
-    <button class="btn btn-outline-dark" type="submit">Next page: {{this.nextPage}}</button>
+    {{#if hasPrevPage}}
+        <a class="mx-4" href="/api/home?page={{prevPage}}"> Anterior </a>
+    {{/if}}
+    {{#if hasNextPage}}
+        <a href="/api/home?page={{nextPage}}"> Siguiente </a>
+    {{/if}}
+{{!--     <button class="btn btn-outline-dark" type="submit">Next page: {{this.nextPage}}</button>
     <button class="btn btn-outline-dark" type="submit">Prev page: {{this.prevPage}}</button>
     <button class="btn btn-outline-dark" type="submit">total docs: {{this.totalDocs}}</button>
     <button class="btn btn-outline-dark" type="submit">total pages: {{this.totalPages}}</button>
-    <button class="btn btn-outline-dark" type="submit">current page: {{this.cuurentPage}}</button>
+    <button class="btn btn-outline-dark" type="submit">current page: {{this.cuurentPage}}</button> --}}
 </div>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/static/assets/js/index.js"></script>
+
+
+

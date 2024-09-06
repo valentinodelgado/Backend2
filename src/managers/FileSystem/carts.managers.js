@@ -12,36 +12,18 @@ class CartManagerFs{
         this.path = path
     }
 
-//    readCarts = async () => {
-//        try{
-//                const cartsJson = await fs.promises.readFile(path, "utf-8")
-//                const cartsJs = JSON.parse(cartsJson)
-//                return cartsJs
-//        } catch (error) {
-//            return []
-//        }
-//    }
 
-//    createCart = async (product) => {
-//        try{
-//            const carts = await this.readCarts()
+    createCart = async (Cart) => {
+        try{
 
-//            const newId = carts.length ? carts[carts.length - 1].id + 1 : 1;
+            const newCart = await cartModel.create(Cart)
 
-//            const newCart = {
-//                id: newId,
-//                products: product
-//            }
+            return {message: "Se ha creado el carrito exitosamente", cart: newCart}
 
-//            carts.push(newCart);
-
-//            await fs.promises.writeFile(path,JSON.stringify(carts, null, "\t"))
-//            return newCart
-
-//        } catch(error) {
-//            console.error(error);
-//        }
-//    }
+        } catch(error) {
+            console.error(error);
+        }
+    }
 
     getCartById = async (cid) => {
         try{
@@ -57,28 +39,41 @@ class CartManagerFs{
         }
     }
 
-//    createProductToCart = async (product, cid) => {
-//        try{
-//            const carts = await this.readCarts()
-
-//            const cart = carts.find(c => c.id === parseInt(cid))
+    createProductToCart = async (product, cid) => {
+        try {
+            // Buscar el carrito por ID
+            const cart = await cartModel.findById(cid);
+    
+            if (!cart) {
+                return "El carrito no existe";
+            }
+    
+            // Verificar si product._id es una cadena válida o un ObjectId
+            if (!product || !product._id) {
+                console.error("El producto o el ID del producto no están definidos.");
+                return "El producto es inválido";
+            }
+    
+            // Verificar si product._id es un ObjectId válido
+            const productId = product._id.toString();
             
-
-//            const existingProduct = cart.products.find(p => p.product === parseInt(product.id))
-
-//            if(existingProduct){
-//                existingProduct.quantity += 1
-//            }else{
-//                cart.products.push({product: product, quantity: 1});
-//            }
-
-//            await fs.promises.writeFile(path,JSON.stringify(carts, null, "\t"))
-
-
-//        }catch(error){
-//            console.error(error)
-//        }
-//    } 
+            // Buscar el producto en el carrito
+            const existingProduct = cart.products.find(p => p.product && p.product.toString() === productId);
+    
+            if (existingProduct) {
+                existingProduct.quantity += 1;
+            } else {
+                cart.products.push({ product: productId, quantity: 1 });
+            }
+    
+            // Guardar el carrito actualizado
+            await cart.save();
+    
+            return "Producto agregado con éxito";
+        }catch(error){
+            console.error(error)
+        }
+    } 
 
     deleteProductFromCart = async (pid,cid) => {
         try{

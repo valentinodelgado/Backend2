@@ -7,8 +7,7 @@ const productService = new ProductsManagerFs();
 
 router.get("/", async (req, res) => {
     try{
-        //const productss = await productService.getProducts({})
-        const { limit = 3, page = 1 } = req.query;
+        const { limit = 1, page = 1} = req.query;
         const products = await productModel.paginate({}, {limit: parseInt(limit), page: parseInt(page)})
         const { docs, totalDocs, totalPages, hasNextPage, hasPrevPage, nextPage, prevPage } = products;
         res.render("home", {products: docs, totalDocs, totalPages,hasNextPage,hasPrevPage,nextPage,prevPage, currentPage: page, limit});
