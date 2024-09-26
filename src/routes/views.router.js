@@ -1,6 +1,8 @@
 import { Router } from "express";
 import ProductsManagerFs from "../managers/FileSystem/products.managers.js";
 import { productModel } from "../models/products.model.js";
+import { userModel } from "../models/users.model.js";
+import jwt from "jsonwebtoken"
 
 const router = Router();
 const productService = new ProductsManagerFs();
@@ -22,7 +24,7 @@ router.get("/realtimeproducts", async (req, res) => {
     }catch(error){
         console.error(error)
     }
-
 });
+
 
 export default router;

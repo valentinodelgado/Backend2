@@ -18,7 +18,7 @@ class CartManagerFs{
 
             const newCart = await cartModel.create(Cart)
 
-            return {message: "Se ha creado el carrito exitosamente", cart: newCart}
+            return newCart
 
         } catch(error) {
             console.error(error);

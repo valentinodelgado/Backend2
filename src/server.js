@@ -1,4 +1,3 @@
-//Crud: create, read, upload, delete
 import express from "express";
 import userRouter from "./routes/users.router.js";
 import productRouter from "./routes/products.router.js";
@@ -13,8 +12,9 @@ import {Server} from "socket.io"
 import { connectDB } from "./config/index.js";
 import chatSocket from "./utils/chatSocket.js";
 import productSocket from "./utils/productSocket.js";
-
-
+import cookieParser from "cookie-parser";
+import passport from "passport";
+import { initializePassport } from "./config/passport.config.js";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -48,6 +48,9 @@ app.use(express.urlencoded({extended: true}));
 app.use("/static",express.static(__dirname + "/public")) //le estoy diciendo a express que utilice esta carpeta public como la carpeta de archivos estaticos, el primer parametro crea una carpeta virtual para que no sea tan facil acceder 
 app.use(morgan("dev"))
 app.use(ioMiddleware(io))
+app.use(cookieParser())
+initializePassport()
+app.use(passport.initialize())
 
 //configuracion del motor de plantillas, usamos engine que es un metodo
 app.engine('handlebars', handlebars.engine({
@@ -63,7 +66,6 @@ app.set("views", __dirname + "/views") //primer argumneto digo que en views esta
 app.set("view engine", "handlebars")
 
 
-app.use("/api/home", viewsRouter)
 
 //Los middlewars son procesos que ocurren antes de llegar a los endpoints
 app.use(function(req,res,next){
@@ -72,9 +74,8 @@ app.use(function(req,res,next){
 })
 
 //endpoints
-app.use("/api/users",userRouter) //usa la ruta del primer parametro para la configuracion de userRouter, esta se concatena con las que hay en el otro archivo
-
-//endpoints entrega 1
+app.use("/api/sessions",userRouter) //usa la ruta del primer parametro para la configuracion de userRouter, esta se concatena con las que hay en el otro archivo
+app.use("/api/home", viewsRouter)
 app.use("/api/products", productRouter);
 app.use("/api/carts", cartsRouter);
 

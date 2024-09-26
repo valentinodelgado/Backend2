@@ -1,3 +1,5 @@
+<h2>Bienvenido {{user}}</h2>
+
 <div class="d-flex justify-content-center align-items-center">
     {{#each products}}
         <div class="card" style="width: 18rem;">
@@ -18,12 +20,11 @@
     {{#if hasNextPage}}
         <a href="/api/home?page={{nextPage}}"> Siguiente </a>
     {{/if}}
-{{!--     <button class="btn btn-outline-dark" type="submit">Next page: {{this.nextPage}}</button>
-    <button class="btn btn-outline-dark" type="submit">Prev page: {{this.prevPage}}</button>
-    <button class="btn btn-outline-dark" type="submit">total docs: {{this.totalDocs}}</button>
-    <button class="btn btn-outline-dark" type="submit">total pages: {{this.totalPages}}</button>
-    <button class="btn btn-outline-dark" type="submit">current page: {{this.cuurentPage}}</button> --}}
 </div>
+
+<form action="/api/sessions/logout" method="POST">
+    <button type="submit"> Logout </button>
+</form>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/static/assets/js/index.js"></script>
 
