@@ -2,6 +2,7 @@ import {respuesta} from "../utils/reutilizable.js"
 import {createHash, isValidPassword} from "../utils/util.js"
 import jwt from "jsonwebtoken"
 import UserManager from "../managers/FileSystem/user.managers.js";
+import UserDto from "../dto/user.dto.js";
 
 const userService = new UserManager() 
 
@@ -65,7 +66,9 @@ class UserController{
         }
 
         async current(req,res){
-            res.render("home", {user: req.user.user})
+            console.log(req.user)
+            const userDto = new UserDto(req.user)
+            res.render("home", {user: userDto})
         }
 }
 
