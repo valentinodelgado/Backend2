@@ -1,11 +1,12 @@
 import { json } from 'express';
-import fs from 'fs';
 import { pid } from 'process';
-import { cartModel } from '../../models/carts.model.js';
+import CartRepository from '../../repositories/cart.repository.js';
+import ProductsManagerFs from './products.managers.js';
 
-
-
+const cartRepository = new CartRepository()
+const productService = new ProductsManagerFs()
 const path = "./dbjson/cartsDb.json"
+
 
 class CartManagerFs{
     constructor(){
@@ -16,7 +17,7 @@ class CartManagerFs{
     createCart = async (Cart) => {
         try{
 
-            const newCart = await cartModel.create(Cart)
+            const newCart = await cartRepository.createCart(Cart)
 
             return newCart
 
@@ -27,9 +28,9 @@ class CartManagerFs{
 
     getCartById = async (cid) => {
         try{
-            const cart = await cartModel.findById(cid).populate("products.product")
+            const cart = await cartRepository.getCartById(cid)
             if(cart){
-                return cart.products
+                return cart
             }
             else{
                 return "No se encontro el carrito"
@@ -42,7 +43,7 @@ class CartManagerFs{
     createProductToCart = async (product, cid) => {
         try {
             // Buscar el carrito por ID
-            const cart = await cartModel.findById(cid);
+            const cart = await cartRepository.getCartById(cid);
     
             if (!cart) {
                 return "El carrito no existe";
@@ -77,7 +78,7 @@ class CartManagerFs{
 
     deleteProductFromCart = async (pid,cid) => {
         try{
-            let result = await cartModel.updateOne(
+            let result = await cartRepository.updateCart(
                 {_id: cid},
                 {$pull: {products: {id: pid}}}
             )
@@ -93,7 +94,7 @@ class CartManagerFs{
 
     deleteProductsFromCart = async (cid) => {
         try{
-            let result = await cartModel.updateOne(
+            let result = await cartRepository.updateCart(
                 {_id: cid},
                 {$set: {products: []}}
             )
@@ -107,7 +108,7 @@ class CartManagerFs{
 
     updateCart = async (cid,body) => {
         try{
-            let result = await cartModel.updateOne(
+            let result = await cartRepository.updateCart(
                 {_id: cid},
                 {$set: {products: body}}
             )
@@ -119,7 +120,7 @@ class CartManagerFs{
 
     updateQuantityProductFromCart = async (cid,pid,body) => {
         try{
-            let result = await cartModel.updateOne(
+            let result = await cartRepository.updateCart(
                 {_id: cid, "products._id": pid},
                 {$inc: {"products.$.quantity": body.quantity}}
             )
@@ -128,6 +129,27 @@ class CartManagerFs{
             console.error(error)
         }
     }
+
+    stockChek = async (cid) =>{
+        try {
+            let cart = await cartRepository.getCartById(cid)
+            let products = []
+            let missingProducts= []
+
+            for (const item of cart.products) {
+                let product = await productService.getProductById(item.product)
+                if(product.stock >= item.quantity){
+                    await productService.updateProduct({stock: product.stock - item.quantity },item.product)
+                    products.push(item)
+                } else {
+                    missingProducts.push(item.product)
+                }
+            }
+            return {products, missingProducts}
+        } catch (error) {
+            console.error(error)
+        }
+    }  
 
 }
 

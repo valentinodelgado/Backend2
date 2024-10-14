@@ -1,0 +1,18 @@
+{{#if hasMissingProducts}}
+    <div class="d-flex-row justify-content-center align-items-center">
+        <h2>Productos no disponibles por falta de stock</h2>
+        {{#each missingProducts}}
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">{{this.title}}</h5>
+                    <h6 class="card-subtitle mb-2 text-body-secondary">{{this.price}}$</h6>
+                    <p class="card-text">{{this.description}}</p>
+                </div>
+            </div>
+        {{/each}}
+    </div>
+{{else}}
+    <h2>Compra realizada con exito!</h2>
+{{/if}}
+<script src="/socket.io/socket.io.js"></script>
+<script src="/static/assets/js/index.js"></script>

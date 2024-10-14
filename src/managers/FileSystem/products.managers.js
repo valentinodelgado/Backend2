@@ -1,8 +1,7 @@
 import { json } from 'express';
-import fs from 'fs';
-import { productModel } from '../../models/products.model.js';
+import ProductRepository from '../../repositories/product.repository.js';
 
-
+const productRepository = new ProductRepository
 const path = "./dbjson/productsDb.json"
 
 class ProductsManagerFs {
@@ -14,7 +13,7 @@ class ProductsManagerFs {
     //crud productos
     getProducts = async (filter) => {
         try{
-            const products = await productModel.find(filter)
+            const products = await productRepository.getProducts(filter)
             return products
         } catch (error){
             console.error(error);
@@ -23,7 +22,7 @@ class ProductsManagerFs {
 
     getProductById = async (id) => {
         try{
-            const product = await productModel.findById(id)
+            const product = await productRepository.getProductById(id)
 
             return product
         }catch(error){
@@ -33,12 +32,12 @@ class ProductsManagerFs {
 
     createProduct = async (newProduct) => {
         try{
-            if(await productModel.findOne({code: newProduct.code}))
+            if(await productRepository.getProduct({code: newProduct.code}))
             {
                 return "Este producto ya existe"
             }
 
-            await productModel.create(newProduct)
+            await productRepository.createProduct(newProduct)
 
             return "Producto agregado"
 
@@ -49,7 +48,7 @@ class ProductsManagerFs {
 
     updateProduct = async (updatesProduct,pid) => {
         try{
-            const updatedProduct = await productModel.findByIdAndUpdate(pid,updatesProduct)
+            const updatedProduct = await productRepository.findByIdAndUpdateProduct(updatesProduct,pid)
 
             if(!updatedProduct)
             {
@@ -65,7 +64,7 @@ class ProductsManagerFs {
     }
     deleteProduct = async (id) => {
         try{
-            const result = await productModel.deleteOne({_id: id})
+            const result = await productRepository.deleteProduct({_id: id})
             if(result.deletedCount===0)
             {
                 return "Producto no encontrado"

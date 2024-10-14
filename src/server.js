@@ -75,7 +75,7 @@ app.use(function(req,res,next){
 
 //endpoints
 app.use("/api/sessions",userRouter) //usa la ruta del primer parametro para la configuracion de userRouter, esta se concatena con las que hay en el otro archivo
-app.use("/api/home", viewsRouter)
+app.use("/", viewsRouter)
 app.use("/api/products", productRouter);
 app.use("/api/carts", cartsRouter);
 
